@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Literal
 
 from fastapi import Depends
 from pymongo import ReturnDocument
@@ -69,3 +69,42 @@ class ReviewRepo:
         review = self.review_coll.find_one(filter)
         logger.debug(f"review: {review}")
         return review_model.ReviewModel(**review) if review else None
+
+    def getList(
+        self,
+        product_id: Optional[str] = None,
+        user_id: Optional[str] = None,
+        rating: Optional[int] = None,
+        sort_by: Literal["created_at", "rating"] = "created_at",
+        sort_order: Literal[-1, 1] = -1,
+        page: int = 1,
+        limit: int = 10,
+    ) -> tuple[list[review_model.ReviewModel], int]:
+        match: dict = {}
+        if product_id:
+            match["product_id"] = product_id
+        if user_id:
+            match["user_id"] = user_id
+        if rating:
+            match["rating"] = rating
+
+        skip = helper.generateSkip(page=page, limit=limit)
+        pipeline = [
+            {"$match": match},
+            {"$sort": {sort_by: sort_order}},
+            {
+                "$facet": {
+                    "paginated_results": [{"$skip": skip}, {"$limit": limit}],
+                    "total": [{"$count": "count"}],
+                }
+            },
+        ]
+        cursor = list(self.review_coll.aggregate(pipeline))
+        reviews = []
+        count = 0
+        try:
+            reviews = [review_model.ReviewModel(**r) for r in cursor[0].get("paginated_results") or []]
+            count = cursor[0]["total"][0]["count"]
+        except Exception as e:
+            logger.warning(f"review getList cursor empty: {e}")
+        return reviews, count
