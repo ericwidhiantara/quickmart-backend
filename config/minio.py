@@ -8,5 +8,5 @@ def getMinioClient():
         Env.MINIO_ENDPOINT,
         access_key=Env.MINIO_ACCESS_KEY,
         secret_key=Env.MINIO_SECRET_KEY,
-        secure=False,
+        secure=True,
     )
