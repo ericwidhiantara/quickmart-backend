@@ -32,6 +32,7 @@ from handler import (
     auth_handler,
     cart_handler,
     category_handler,
+    order_handler,
     product_handler,
     user_handler,
     wallet_handler,
@@ -120,6 +121,7 @@ app.include_router(user_handler.UserRouter)
 app.include_router(product_handler.ProductRouter)
 app.include_router(category_handler.CategoryRouter)
 app.include_router(cart_handler.CartRouter)
+app.include_router(order_handler.OrderRouter)
 app.include_router(wallet_handler.WalletRouter)
 
 if __name__ == "__main__":
