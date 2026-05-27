@@ -35,6 +35,7 @@ from handler import (
     order_handler,
     product_handler,
     review_handler,
+    shipping_address_handler,
     user_handler,
     wallet_handler,
 )
@@ -125,6 +126,7 @@ app.include_router(cart_handler.CartRouter)
 app.include_router(order_handler.OrderRouter)
 app.include_router(review_handler.ReviewRouter)
 app.include_router(wallet_handler.WalletRouter)
+app.include_router(shipping_address_handler.ShippingAddressRouter)
 
 if __name__ == "__main__":
     # checking unused env ferm .env file
